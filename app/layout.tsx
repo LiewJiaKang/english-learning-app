@@ -1,12 +1,14 @@
-import { Geist, Geist_Mono, Public_Sans, Merriweather } from "next/font/google"
+import { Geist_Mono, Merriweather, Asap, Public_Sans } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { AppSessionProvider } from "@/components/session-provider";
 
-const merriweatherHeading = Merriweather({subsets:['latin'],variable:'--font-heading'});
+const merriweatherHeading = Merriweather({ subsets: ['latin'], variable: '--font-heading' });
 
-const publicSans = Public_Sans({subsets:['latin'],variable:'--font-sans'})
+const asap = Asap({ subsets: ['latin'], variable: '--font-sans' })
 
 const fontMono = Geist_Mono({
   subsets: ["latin"],
@@ -22,10 +24,16 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", publicSans.variable, merriweatherHeading.variable)}
+      className={cn("antialiased", fontMono.variable, "font-sans", asap.variable, merriweatherHeading.variable)}
     >
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <AppSessionProvider>
+          <ThemeProvider>
+            <TooltipProvider>
+              {children}
+            </TooltipProvider>
+          </ThemeProvider>
+        </AppSessionProvider>
       </body>
     </html>
   )
