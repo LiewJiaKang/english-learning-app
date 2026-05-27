@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { DictionaryCard } from "./dictionary-card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { SavedWord } from "@prisma/client";
+import { SavedWord } from "../generated/prisma/client";
 import { ArrowUpDown } from "lucide-react";
 
 type SortOrder = "date-desc" | "date-asc" | "alpha-asc" | "alpha-desc";
