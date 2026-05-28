@@ -92,7 +92,7 @@ export default function Navbar() {
                                 </Tooltip>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="outline">
+                                        <Button variant="outline" className="backdrop-blur-2xl">
                                             {session.user?.image && (
                                                 <Image
                                                     src={session.user.image}

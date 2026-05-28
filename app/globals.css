@@ -74,6 +74,7 @@
 }
 
 @theme inline {
+  --font-asap: var(--font-asap);
   --font-sans: var(--font-sans);
   --font-heading: var(--font-heading);
   --color-sidebar-ring: var(--sidebar-ring);

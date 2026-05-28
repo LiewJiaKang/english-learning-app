@@ -7,11 +7,11 @@ import { Card, CardContent } from "./ui/card";
 import { Skeleton } from "./ui/skeleton";
 import { Separator } from "./ui/separator";
 import { Progress } from "./ui/progress";
-import { SpeechIcon } from "lucide-react";
 import { IWord, fetchWord, playSound } from "@/lib/dictionary";
 import { Flashcard } from "../generated/prisma/client";
 import { toast } from "sonner";
 import { incrementDailyActivity } from "@/lib/dailyActivity";
+import { IconVolume } from "@tabler/icons-react";
 
 export function FlashcardClient({ initialCards }: { initialCards: Flashcard[] }) {
     const { data: session } = useSession();
@@ -134,7 +134,7 @@ export function FlashcardClient({ initialCards }: { initialCards: Flashcard[] })
                                                 playSound(audio);
                                             }}
                                         >
-                                            <SpeechIcon className="h-6 w-6" />
+                                            <IconVolume className="h-6 w-6" />
                                         </Button>
                                     )}
                                 </h2>

@@ -3,9 +3,9 @@
 import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { Copy, Check } from "lucide-react";
 import WordHighlighter from "./word-highlighter";
 import { incrementDailyActivity } from "@/lib/dailyActivity";
+import { IconCheck, IconCopy } from "@tabler/icons-react";
 
 export default function EssayOutput({ result }: { result: string }) {
     const [copied, setCopied] = useState(false);
@@ -41,7 +41,7 @@ export default function EssayOutput({ result }: { result: string }) {
     };
 
     return (
-        <div className="relative">
+        <div className="relative mx-2">
 
             {/* Copy Button */}
             <div className="absolute -top-8 -right-2">
@@ -51,7 +51,7 @@ export default function EssayOutput({ result }: { result: string }) {
                     onClick={handleCopy}
                     className="h-8 w-8"
                 >
-                    {copied ? <Check size={16} /> : <Copy size={16} />}
+                    {copied ? <IconCheck className="h-4 w-4" /> : <IconCopy className="h-4 w-4" />}
                 </Button>
             </div>
 

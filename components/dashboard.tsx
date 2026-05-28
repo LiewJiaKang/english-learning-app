@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useSession } from "next-auth/react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { getTipOfTheDay } from "@/lib/getDailyTip";
 import tips from "@/data/tips.json";
 import books from "@/data/books.json";
@@ -97,7 +97,7 @@ export default function Dashboard() {
 
     return (
         <div className="container mx-auto max-w-6xl px-4 pt-20 md:pt-24 mb-10">
-            <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Dashboard</h1>
+            <h1 className="text-2xl font-bold tracking-tight md:text-3xl font-heading">Dashboard</h1>
 
             {/* Welcome + Quick Actions */}
             <div className="mt-6 grid gap-4 md:grid-cols-2">

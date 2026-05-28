@@ -16,7 +16,6 @@ import {
     inline,
     FloatingPortal,
 } from "@floating-ui/react";
-import { PlusIcon, SpeechIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
 import { Separator } from "./ui/separator";
@@ -31,6 +30,7 @@ import { toast } from "sonner";
 
 import { IWord, fetchWord, playSound } from "@/lib/dictionary";
 import { incrementDailyActivity } from "@/lib/dailyActivity";
+import { IconPlus, IconVolume } from "@tabler/icons-react";
 
 
 
@@ -144,7 +144,7 @@ export default function WordHighlighter({ text }: { text: string }) {
 
     return (
         <>
-            <div className="leading-relaxed">
+            <div className="leading-relaxed font-asap font-normal">
                 {tokens.map((token, index) => {
                     if (/^\s+$/.test(token)) {
                         return <span key={index}>{token}</span>;
@@ -177,7 +177,7 @@ export default function WordHighlighter({ text }: { text: string }) {
                             left: x ?? 0,
                             ...styles,
                         }}
-                        className="z-50"
+                        className="z-50 font-sans"
                         {...getFloatingProps()}
                     >
                         <Card className="max-h-96 overflow-y-auto max-w-screen w-120 shadow-lg border">
@@ -207,7 +207,7 @@ export default function WordHighlighter({ text }: { text: string }) {
                                                         size="icon-sm"
                                                         onClick={() => playSound(audio)}
                                                     >
-                                                        <SpeechIcon className="h-5 w-5" />
+                                                        <IconVolume className="h-5 w-5" />
                                                     </Button>
                                                 )}
                                             </div>
@@ -219,7 +219,7 @@ export default function WordHighlighter({ text }: { text: string }) {
                                                 {savedWords.has(definition.word.toLowerCase()) ? (
                                                     "Saved"
                                                 ) : (
-                                                    <><PlusIcon className="h-5 w-5" /> Save word</>
+                                                    <><IconPlus className="h-5 w-5" /> Save word</>
                                                 )}
                                             </Button>
                                         </CardTitle>
