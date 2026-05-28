@@ -13,6 +13,7 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useRef } from "react";
 import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 function HeroContent({ onEnter }: { onEnter: () => void }) {
   return (
@@ -54,6 +55,7 @@ export default function Page() {
       <Header />
       <Dashboard />
       <Analytics />
+      <SpeedInsights />
       <Footer />
     </>;
   }
@@ -142,6 +144,7 @@ export default function Page() {
         </div>
       </div>
       <Analytics />
+      <SpeedInsights />
       <Footer />
     </>
   );
