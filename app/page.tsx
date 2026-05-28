@@ -12,6 +12,7 @@ import { useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useRef } from "react";
+import { Analytics } from "@vercel/analytics/next"
 
 function HeroContent({ onEnter }: { onEnter: () => void }) {
   return (
@@ -52,6 +53,7 @@ export default function Page() {
     return <>
       <Header />
       <Dashboard />
+      <Analytics />
       <Footer />
     </>;
   }
@@ -139,6 +141,7 @@ export default function Page() {
           </p>
         </div>
       </div>
+      <Analytics />
       <Footer />
     </>
   );

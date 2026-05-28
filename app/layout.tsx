@@ -1,4 +1,4 @@
-import { Geist_Mono, Merriweather, Asap, Public_Sans } from "next/font/google"
+import { Geist_Mono, Merriweather, Asap } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
