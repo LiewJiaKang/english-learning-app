@@ -16,6 +16,7 @@ import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { LampContainer } from "@/components/ui/lamp";
 import { IconBook, IconDeviceGamepad, IconWand } from "@tabler/icons-react";
+import Notification from "@/components/notificaton";
 
 function HeroContent({ onEnter }: { onEnter: () => void }) {
   return (
@@ -153,6 +154,7 @@ export default function Page() {
           <p className="text-sm text-muted-foreground/70">— Cookers Council</p>
         </div>
       </div>
+      <Notification />
       <Analytics />
       <SpeedInsights />
       <Footer />
