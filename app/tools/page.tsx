@@ -3,6 +3,7 @@ import DictionaryPage from "@/components/dictionary-page";
 import Footer from "@/components/footer";
 import { EssayGrader } from "@/components/grade-essay";
 import Header from "@/components/header";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { BookIcon, BookOpenIcon, CheckCircleIcon, FileTextIcon, HamburgerIcon, SandwichIcon } from "lucide-react";
 export default function Tools() {
@@ -13,29 +14,34 @@ export default function Tools() {
         <h1 className="text-4xl font-bold tracking-tight">
           Tools
         </h1>
-        <Tabs defaultValue="account" className="w-full pt-4">
-          <TabsList variant={"line"}>
-            <TabsTrigger value="resources">
-              <BookOpenIcon />
-              Resources
-            </TabsTrigger>
-            <TabsTrigger value="format">
-              <FileTextIcon />
-              Exam format
-            </TabsTrigger>
-            <TabsTrigger value="check">
-              <CheckCircleIcon />
-              Essay checker
-            </TabsTrigger>
-            <TabsTrigger value="cheeseburger">
-              <HamburgerIcon />
-              Cheeseburger technique
-            </TabsTrigger>
-            <TabsTrigger value="dictionary">
-              <BookIcon />
-              Dictionary
-            </TabsTrigger>
-          </TabsList>
+        <Tabs defaultValue="resources" className="w-full pt-4">
+          <ScrollArea>
+            <div className="w-full relative h-10">
+              <TabsList variant={"line"} className="flex absolute h-10">
+                <TabsTrigger value="resources">
+                  <BookOpenIcon />
+                  Resources
+                </TabsTrigger>
+                <TabsTrigger value="format">
+                  <FileTextIcon />
+                  Exam format
+                </TabsTrigger>
+                <TabsTrigger value="check">
+                  <CheckCircleIcon />
+                  Essay checker
+                </TabsTrigger>
+                <TabsTrigger value="cheeseburger">
+                  <HamburgerIcon />
+                  Cheeseburger technique
+                </TabsTrigger>
+                <TabsTrigger value="dictionary">
+                  <BookIcon />
+                  Dictionary
+                </TabsTrigger>
+              </TabsList>
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
           <TabsContent value="dictionary">
             <DictionaryPage />
           </TabsContent>

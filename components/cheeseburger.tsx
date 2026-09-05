@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -30,6 +31,7 @@ import {
   createBurger,
   type Burger,
 } from "@/components/body-builder"
+import { EssayPreviewDialog } from "./essay-preview-dialog"
 
 // ─────────────────────────────────────────────
 // Types
@@ -284,15 +286,15 @@ export default function EssayBuilder() {
           value="introduction"
           className="mt-6"
         >
-          <Card>
+          <Card className="bg-muted/20">
             <CardHeader>
-              <CardTitle className="text-base">
+              <CardTitle>
                 Introduction
               </CardTitle>
 
-              <p className="text-sm text-muted-foreground">
+              <CardDescription>
                 Hook → Background → Thesis
-              </p>
+              </CardDescription>
             </CardHeader>
 
             <CardContent className="space-y-6">
@@ -403,15 +405,15 @@ export default function EssayBuilder() {
           value="conclusion"
           className="mt-6"
         >
-          <Card>
+          <Card className="bg-muted/20">
             <CardHeader>
-              <CardTitle className="text-base">
+              <CardTitle>
                 Conclusion
               </CardTitle>
 
-              <p className="text-sm text-muted-foreground">
+              <CardDescription>
                 Restatement → Final words
-              </p>
+              </CardDescription>
             </CardHeader>
 
             <CardContent className="space-y-6">
@@ -480,15 +482,7 @@ export default function EssayBuilder() {
             <ChevronRight />
           </Button>
         ) : (
-          <Button
-            type="button"
-            onClick={() => {
-              console.log(essay)
-            }}
-          >
-            <Check />
-            Finish
-          </Button>
+          <EssayPreviewDialog essay={essay} />
         )}
       </div>
 
