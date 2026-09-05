@@ -5,84 +5,305 @@ const cohere = new CohereClientV2({
   token: process.env.COHERE_API_KEY!,
 })
 
+const ESSAY_TYPES = ["Narrative", "Review", "Report", "Article"] as const
+
+const LEVELS = [
+  "Beginner",
+  "Intermediate",
+  "Advanced",
+  "Secondary School",
+  "SPM",
+] as const
+
+type EssayType = (typeof ESSAY_TYPES)[number]
+
 function buildPrompt(
-  essayType: string,
+  essayType: EssayType,
   title: string,
   theme: string,
   level: string,
   length: number
 ): string {
-  const base = `Write a ${length}-word ${essayType} essay at ${level} level.
-Title: ${title}
-Theme: ${theme}
+  const base = `Write an approximately ${length}-word ${essayType} essay at ${level} level.
 
-IMPORTANT: Return your response as a JSON object with a "paragraphs" array containing the essay paragraphs as strings.
-Example format: { "paragraphs": ["First paragraph...", "Second paragraph...", ...] }
-Do not include any other text, markdown, or explanations outside the JSON object.
+Title: ${title}
+Theme: ${theme || "No specific theme provided."}
+
+Return ONLY a valid JSON object in this exact shape:
+
+{
+  "paragraphs": [
+    "First paragraph...",
+    "Second paragraph..."
+  ]
+}
+
+Do not include:
+- Markdown
+- Code fences
+- Explanations
+- A title inside the paragraphs
+- Any text outside the JSON object
 
 Paragraph structure requirements:
 
 `
 
-  const prompts: Record<string, string> = {
+  const prompts: Record<EssayType, string> = {
     Narrative:
       base +
       `Follow these requirements:
-- Begin by "freezing the moment": describe the current situation vividly.
-- Describe the main character(s) (2-3 characters max).
-- Start with description, then enter the imagination/conflict.
-- Include a single conflict.
+- Begin by "freezing the moment" and vividly describing the current situation.
+- Include no more than 2-3 main characters.
+- Begin with description before moving into the main conflict.
+- Include one clear central conflict.
 - Resolve the conflict within one week in the story.
-
-Use descriptive language and varied sentences. The number of paragraphs can vary, but ensure all elements are covered.`,
+- Use descriptive language.
+- Use varied sentence structures.
+- Maintain a clear beginning, development, climax, and resolution.
+- The number of paragraphs may vary as needed.`,
 
     Review:
       base +
       `Write EXACTLY 4 paragraphs in this order:
-1. Introduction: introduce the subject and your overall impression.
-2. Pros: discuss strengths with specific examples. (one paragraph only)
-3. Cons: discuss weaknesses with specific examples. (one paragraph only)
-4. Conclusion: summarise and give a recommendation.`,
+
+1. Introduction
+Introduce the subject being reviewed and give an overall impression.
+
+2. Pros
+Discuss the strengths with specific examples.
+Keep all strengths in this single paragraph.
+
+3. Cons
+Discuss the weaknesses with specific examples.
+Keep all weaknesses in this single paragraph.
+
+4. Conclusion
+Summarise the review and give a clear recommendation.
+
+Use engaging but balanced language.`,
 
     Report:
       base +
       `Write EXACTLY 4 paragraphs in this order:
-1. Introduction: state the purpose of the report and what it covers.
-2. Findings/Description: present key information, facts, or observations.
-3. Recommendations: suggest improvements or future actions.
-4. Conclusion: summarise main points and overall outcome.
 
-Use factual, impersonal language and linking words. Each paragraph should be a single block of text.`,
+1. Introduction
+State the purpose of the report and what it covers.
+
+2. Findings / Description
+Present the important facts, information, observations, or findings.
+
+3. Recommendations
+Suggest realistic improvements or future actions.
+
+4. Conclusion
+Summarise the main findings and state the overall outcome.
+
+Use:
+- Factual and impersonal language
+- Formal vocabulary appropriate to the requested level
+- Linking words and sentence connectors
+
+Each paragraph must be one continuous block of text.`,
 
     Article:
       base +
       `Write EXACTLY 5 paragraphs in this order:
-1. Introduction: hook the reader and outline main points.
-2. Body paragraph 1: clear topic sentence + at least four supporting details/examples.
-3. Body paragraph 2: clear topic sentence + at least four supporting details/examples.
-4. Body paragraph 3: clear topic sentence + at least four supporting details/examples.
-5. Conclusion: summarise main points and end with a thought or suggestion.
 
-Include minimal questions in the first paragraph of the article to engage the reader. Use sentence connectors.`,
+1. Introduction
+Hook the reader and briefly introduce the main points.
+You may include one engaging question, but avoid excessive rhetorical questions.
+
+2. Body paragraph 1
+Include a clear topic sentence and at least four supporting details, examples, or explanations.
+
+3. Body paragraph 2
+Include a clear topic sentence and at least four supporting details, examples, or explanations.
+
+4. Body paragraph 3
+Include a clear topic sentence and at least four supporting details, examples, or explanations.
+
+5. Conclusion
+Summarise the main ideas and end with a suitable thought, recommendation, or suggestion.
+
+Use clear sentence connectors and varied sentence structures.`,
   }
 
-  return (
-    prompts[essayType] ||
-    base +
-      "Write in full paragraphs with a clear title, varied sentences, and descriptive language."
-  )
+  return prompts[essayType]
+}
+
+function extractText(content: unknown): string {
+  if (!Array.isArray(content)) {
+    return ""
+  }
+
+  return content
+    .filter(
+      (
+        item
+      ): item is {
+        type: "text"
+        text: string
+      } =>
+        typeof item === "object" &&
+        item !== null &&
+        "type" in item &&
+        "text" in item &&
+        item.type === "text" &&
+        typeof item.text === "string"
+    )
+    .map((item) => item.text)
+    .join("")
+    .trim()
+}
+
+function parseParagraphs(rawText: string): string[] {
+  try {
+    const jsonString = rawText
+      .replace(/^```(?:json)?\s*/i, "")
+      .replace(/\s*```$/, "")
+      .trim()
+
+    const parsed: unknown = JSON.parse(jsonString)
+
+    if (
+      typeof parsed !== "object" ||
+      parsed === null ||
+      !("paragraphs" in parsed)
+    ) {
+      throw new Error("Missing paragraphs property")
+    }
+
+    const paragraphs = (parsed as { paragraphs: unknown }).paragraphs
+
+    if (
+      !Array.isArray(paragraphs) ||
+      !paragraphs.every((paragraph) => typeof paragraph === "string")
+    ) {
+      throw new Error("Paragraphs must be an array of strings")
+    }
+
+    const cleaned = paragraphs
+      .map((paragraph) => paragraph.trim())
+      .filter(Boolean)
+
+    if (cleaned.length === 0) {
+      throw new Error("No valid paragraphs returned")
+    }
+
+    return cleaned
+  } catch {
+    console.warn(
+      "Cohere response was not valid JSON. Falling back to plain text parsing."
+    )
+
+    // Remove possible JSON / Markdown junk before splitting
+    const cleanedText = rawText
+      .replace(/^```(?:json)?\s*/i, "")
+      .replace(/\s*```$/, "")
+      .replace(/^\s*\{\s*"paragraphs"\s*:\s*\[\s*/i, "")
+      .replace(/\s*\]\s*\}\s*$/, "")
+      .trim()
+
+    return cleanedText
+      .split(/\n\s*\n/)
+      .map((paragraph) =>
+        paragraph
+          .trim()
+          .replace(/^["']|["'],?$/g, "")
+          .trim()
+      )
+      .filter(Boolean)
+  }
 }
 
 export async function POST(req: Request) {
   try {
-    const { title, theme, level, essayType, length } = await req.json()
+    if (!process.env.COHERE_API_KEY) {
+      console.error("COHERE_API_KEY is not configured")
 
-    if (!title) {
+      return NextResponse.json(
+        { error: "Server configuration error." },
+        { status: 500 }
+      )
+    }
+
+    let body: unknown
+
+    try {
+      body = await req.json()
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid request body." },
+        { status: 400 }
+      )
+    }
+
+    if (typeof body !== "object" || body === null) {
+      return NextResponse.json(
+        { error: "Invalid request body." },
+        { status: 400 }
+      )
+    }
+
+    const { title, theme, level, essayType, length } = body as {
+      title?: unknown
+      theme?: unknown
+      level?: unknown
+      essayType?: unknown
+      length?: unknown
+    }
+
+    if (typeof title !== "string" || !title.trim()) {
       return NextResponse.json({ error: "Title is required." }, { status: 400 })
     }
 
-    const wordCount = parseInt(length) || 300
-    const userPrompt = buildPrompt(essayType, title, theme, level, wordCount)
+    if (
+      typeof essayType !== "string" ||
+      !ESSAY_TYPES.includes(essayType as EssayType)
+    ) {
+      return NextResponse.json(
+        { error: "Invalid essay type." },
+        { status: 400 }
+      )
+    }
+
+    if (typeof level !== "string" || !level.trim()) {
+      return NextResponse.json({ error: "Level is required." }, { status: 400 })
+    }
+
+    /*
+     * Uncomment this if your frontend uses a fixed list of levels:
+     *
+     * if (!LEVELS.includes(level as (typeof LEVELS)[number])) {
+     *   return NextResponse.json(
+     *     { error: "Invalid level." },
+     *     { status: 400 }
+     *   )
+     * }
+     */
+
+    const cleanTitle = title.trim().slice(0, 200)
+
+    const cleanTheme =
+      typeof theme === "string" ? theme.trim().slice(0, 1000) : ""
+
+    const parsedLength =
+      typeof length === "number"
+        ? length
+        : Number.parseInt(String(length ?? ""), 10)
+
+    const wordCount = Number.isFinite(parsedLength)
+      ? Math.min(Math.max(Math.round(parsedLength), 100), 1000)
+      : 300
+
+    const userPrompt = buildPrompt(
+      essayType as EssayType,
+      cleanTitle,
+      cleanTheme,
+      level.trim(),
+      wordCount
+    )
 
     const response = await cohere.chat({
       model: "command-a-03-2025",
@@ -91,7 +312,7 @@ export async function POST(req: Request) {
         {
           role: "system",
           content:
-            "You are an essay writer in Malaysia who writes clearly, engagingly, and with proper structure. You always output valid JSON as requested.",
+            "You are an English essay-writing assistant for Malaysian secondary-school students. Use standard British English, vocabulary appropriate to the requested level, and the requested essay structure. Always return valid JSON containing only a paragraphs array.",
         },
         {
           role: "user",
@@ -100,34 +321,36 @@ export async function POST(req: Request) {
       ],
     })
 
-    const rawText =
-      response.message.content?.[0]?.type === "text"
-        ? response.message.content[0].text
-        : ""
+    const rawText = extractText(response.message.content)
 
-    // Attempt to parse JSON from the response
-    let paragraphs: string[] = []
-    try {
-      // Strip any markdown code block fences
-      const jsonStr = rawText.replace(/```json\s*|\s*```/g, "").trim()
-      const parsed = JSON.parse(jsonStr)
-      if (parsed.paragraphs && Array.isArray(parsed.paragraphs)) {
-        paragraphs = parsed.paragraphs
-      } else {
-        throw new Error("Invalid JSON structure")
-      }
-    } catch (e) {
-      // Fallback: split by double newlines
-      console.warn("JSON parsing failed, falling back to plain text splitting")
-      paragraphs = rawText.split(/\n\s*\n/).filter((p) => p.trim().length > 0)
+    if (!rawText) {
+      console.error("Cohere returned an empty response")
+
+      return NextResponse.json(
+        { error: "The model returned an empty response." },
+        { status: 502 }
+      )
     }
 
-    // Build the final essay blob: title first, then paragraphs separated by double newlines
-    const essayBlob = [title, ...paragraphs].join("\n\n")
+    const paragraphs = parseParagraphs(rawText)
 
-    return NextResponse.json({ result: essayBlob })
+    if (paragraphs.length === 0) {
+      console.error("No essay paragraphs could be extracted")
+
+      return NextResponse.json(
+        { error: "Failed to parse generated essay." },
+        { status: 502 }
+      )
+    }
+
+    const essayBlob = [cleanTitle, ...paragraphs].join("\n\n")
+
+    return NextResponse.json({
+      result: essayBlob,
+    })
   } catch (error) {
     console.error("Cohere Error:", error)
+
     return NextResponse.json(
       { error: "Failed to generate essay." },
       { status: 500 }

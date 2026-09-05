@@ -9,14 +9,15 @@ import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import { WavyBackground } from "@/components/ui/wavy-background";
 import { useSession } from "next-auth/react";
-import { useTheme } from "next-themes";
+import { useTheme } from '@teispace/next-themes';
 import Link from "next/link";
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { LampContainer } from "@/components/ui/lamp";
 import { IconBook, IconDeviceGamepad, IconWand } from "@tabler/icons-react";
 import Notification from "@/components/notificaton";
+import { Spinner } from "@/components/ui/spinner";
 
 function HeroContent({ onEnter }: { onEnter: () => void }) {
   return (
@@ -51,16 +52,29 @@ export default function Page() {
     featuresRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const { data: session } = useSession();
+  const { status } = useSession();
 
-  if (session) {
-    return <>
-      <Header />
-      <Dashboard />
-      <Analytics />
-      <SpeedInsights />
-      <Footer />
-    </>;
+  const authenticatedLayout = useMemo(() => {
+    if (status !== "authenticated") return null
+    return (
+      <>
+        <Header />
+        <Dashboard />
+        <Analytics />
+        <SpeedInsights />
+        <Footer />
+      </>
+    )
+  }, [status]) // Only re-creates when status changes
+
+  if (status === "loading") {
+    return <div className="w-screen h-screen flex items-center justify-center">
+      <Spinner className="size-8"></Spinner>
+    </div>
+  }
+
+  if (status === "authenticated") {
+    return authenticatedLayout
   }
 
   return (

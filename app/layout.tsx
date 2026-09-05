@@ -1,7 +1,8 @@
 import { Geist_Mono, Asap, Source_Sans_3, Source_Serif_4 } from "next/font/google"
 
 import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
+import { ThemeProvider } from "@teispace/next-themes"
+import { getTheme } from '@teispace/next-themes/server';
 import { cn } from "@/lib/utils";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppSessionProvider } from "@/components/session-provider";
@@ -22,11 +23,12 @@ export const metadata: Metadata = {
   description: "A learning app for English learners",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const initialTheme = await getTheme() || undefined;
   return (
     <html
       lang="en"
@@ -34,13 +36,19 @@ export default function RootLayout({
       className={cn("antialiased", fontMono.variable, asap.variable, "font-sans", sourceSans3.variable, sourceSerif4Heading.variable)}
     >
       <body>
-        <AppSessionProvider>
-          <ThemeProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem={true}
+          storageKey="theme"
+          initialTheme={initialTheme}
+        >
+          <AppSessionProvider>
             <TooltipProvider>
               {children}
             </TooltipProvider>
-          </ThemeProvider>
-        </AppSessionProvider>
+          </AppSessionProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
