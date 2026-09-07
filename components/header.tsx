@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
-import { IconBookmark, IconCards, IconDeviceGamepad, IconHome, IconTools, IconBook, IconFlame } from "@tabler/icons-react";
+import { IconFlame } from "@tabler/icons-react";
 const ModeToggle = dynamic(() => import("@/components/ui/theme-switch"), {
   ssr: false,
 });
@@ -20,7 +20,7 @@ import { useEffect } from "react";
 import { ButtonGroup } from "./ui/button-group";
 import Image from "next/image";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
-import { FloatingDock } from "./ui/floating-dock";
+import { Navigation } from "./navigation";
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -50,15 +50,6 @@ export default function Navbar() {
 
     syncStreak();
   }, [session]);
-
-  const floatingItems = [
-    { title: "Home", href: "/", icon: <IconHome className="w-full h-full" /> },
-    { title: "Games", href: "/games", icon: <IconDeviceGamepad className="w-full h-full" /> },
-    { title: "Reading Practice", href: "/essay", icon: <IconBook className="w-full h-full" /> },
-    { title: "Flashcards", href: "/flashcards", icon: <IconCards className="w-full h-full" /> },
-    { title: "Tools", href: "/tools", icon: <IconTools className="w-full h-full" /> },
-    { title: "Saved Words", href: "/saved-words", icon: <IconBookmark className="w-full h-full" /> },
-  ]
 
   return (
     <>
@@ -127,7 +118,7 @@ export default function Navbar() {
         </div>
       </header >
       <div className="fixed bottom-6 right-0 z-50 w-full flex items-center justify-end lg:justify-center px-6">
-        <FloatingDock items={floatingItems} />
+        <Navigation />
       </div>
       <Toaster />
     </>
