@@ -163,7 +163,7 @@ export default function Page() {
             Why We Built This
           </h2>
           <p className="text-muted-foreground text-lg leading-relaxed max-w-xl mx-auto">
-            We started building this app when we were in Form 5. Our English vocabulary held us back until a teacher showed us a method that actually worked. We improved faster than we expected, and we wanted other students to get the same chance. So we built this platform for everyone to use.
+            We started building this app when we were in Form 5. Our English vocabulary held us back until few teachers showed us some methods that actually worked. We improved faster than we expected, and we wanted other students to get the same chance. So we built this platform for everyone to use.
           </p>
           <p className="text-sm text-muted-foreground/70">— Cookers Council</p>
         </div>

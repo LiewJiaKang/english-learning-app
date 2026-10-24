@@ -10,7 +10,7 @@ export default function Tools() {
   return (
     <>
       <Header />
-      <div className="container mt-24 mx-auto min-h-screen bg-background px-4">
+      <div className="max-w-6xl container mt-24 mx-auto min-h-screen bg-background px-4">
         <h1 className="text-4xl font-bold tracking-tight">
           Tools
         </h1>
